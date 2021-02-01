@@ -15,5 +15,6 @@
         </attr>
         <attr name="header_highlight_image_size" format="dimension"/>
         <attr name="header_highlight_image" format="reference"/>
+        <attr name="is_12h" format="boolean"/>
     </declare-styleable>
 </resources>

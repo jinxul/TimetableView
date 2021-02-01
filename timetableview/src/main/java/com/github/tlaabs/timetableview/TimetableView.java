@@ -38,7 +38,7 @@ public class TimetableView extends LinearLayout {
     private static final int DEFAULT_HEADER_FONT_SIZE_DP = 15;
     private static final int DEFAULT_HEADER_HIGHLIGHT_FONT_SIZE_DP = 15;
     private static final int DEFAULT_STICKER_FONT_SIZE_DP = 13;
-
+    private static final boolean DEFAULT_IS_12H = true;
 
     private int rowCount;
     private int columnCount;
@@ -48,6 +48,7 @@ public class TimetableView extends LinearLayout {
     private String[] stickerColors;
     private int startTime;
     private int headerHighlightColor;
+    private boolean is12H;
 
     private RelativeLayout stickerBox;
     TableLayout tableHeader;
@@ -97,6 +98,7 @@ public class TimetableView extends LinearLayout {
         else if(highlightTypeValue == 1) highlightMode = HighlightMode.IMAGE;
         headerHighlightImageSize = a.getDimensionPixelSize(R.styleable.TimetableView_header_highlight_image_size, dp2Px(24));
         headerHighlightImage = a.getDrawable(R.styleable.TimetableView_header_highlight_image);
+        is12H = a.getBoolean(R.styleable.TimetableView_is_12h, DEFAULT_IS_12H);
         a.recycle();
     }
 
@@ -363,9 +365,13 @@ public class TimetableView extends LinearLayout {
     }
 
     private String getHeaderTime(int i) {
-        int p = (startTime + i) % 24;
-        int res = p <= 12 ? p : p - 12;
-        return res + "";
+        if (is12H) {
+            int p = (startTime + i) % 24;
+            int res = p <= 12 ? p : p - 12;
+            return res + "";
+        } else {
+            return (startTime + i) + "";
+        }
     }
 
     static private int dp2Px(int dp) {
