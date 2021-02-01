@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.support.v7.content.res.AppCompatResources;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -60,6 +59,7 @@ public class TimetableView extends LinearLayout {
     private int stickerCount = -1;
 
     private OnStickerSelectedListener stickerSelectedListener = null;
+    private OnSingleStickerSelectedListener singleStickerSelectedListener = null;
 
     private HighlightMode highlightMode = HighlightMode.COLOR;
     private int headerHighlightImageSize;
@@ -118,6 +118,9 @@ public class TimetableView extends LinearLayout {
         stickerSelectedListener = listener;
     }
 
+    public void setOnSingleStickerSelectEventListener(OnSingleStickerSelectedListener listener) {
+        singleStickerSelectedListener = listener;
+    }
     /**
      * date : 2019-02-08
      * get all schedules TimetableView has.
@@ -176,6 +179,37 @@ public class TimetableView extends LinearLayout {
             sticker.addTextView(tv);
             sticker.addSchedule(schedule);
             stickers.put(count, sticker);
+            stickerBox.addView(tv);
+        }
+        setStickerColor();
+    }
+
+    public void addSchedules(final ArrayList<Schedule> schedules) {
+        Sticker sticker = new Sticker();
+        for (int i = 0; i < schedules.size(); i++) {
+            TextView tv = new TextView(context);
+            final Schedule schedule = schedules.get(i);
+
+            RelativeLayout.LayoutParams param = createStickerParam(schedule);
+            tv.setLayoutParams(param);
+            tv.setPadding(10, 0, 10, 0);
+            tv.setText(schedule.getClassTitle() + "\n" + schedule.getClassPlace());
+            tv.setTextColor(Color.parseColor("#FFFFFF"));
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_STICKER_FONT_SIZE_DP);
+            tv.setTypeface(null, Typeface.BOLD);
+
+            final int index = i;
+            tv.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (singleStickerSelectedListener != null)
+                        singleStickerSelectedListener.OnSingleStickerSelected(index, schedule);
+                }
+            });
+
+            sticker.addTextView(tv);
+            sticker.addSchedule(schedule);
+            stickers.put(i, sticker);
             stickerBox.addView(tv);
         }
         setStickerColor();
@@ -394,6 +428,10 @@ public class TimetableView extends LinearLayout {
 
     public interface OnStickerSelectedListener {
         void OnStickerSelected(int idx, ArrayList<Schedule> schedules);
+    }
+
+    public interface OnSingleStickerSelectedListener{
+        void OnSingleStickerSelected(int index, Schedule schedule);
     }
 
     static class Builder {
